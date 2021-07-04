@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TaskTracker.Services;
 
 namespace TaskTracker.API.Controllers
 {
@@ -18,14 +19,19 @@ namespace TaskTracker.API.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        private IProjectService _projectService { get; set; }
+
+
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IProjectService projectService)
         {
             _logger = logger;
+            _projectService = projectService;
         }
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            var x = _projectService.GetProject(0);
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
