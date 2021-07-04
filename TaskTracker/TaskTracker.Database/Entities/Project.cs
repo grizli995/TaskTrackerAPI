@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TaskTracker.Database.Enums;
 
 namespace TaskTracker.Database.Entities
 {
@@ -14,5 +15,6 @@ namespace TaskTracker.Database.Entities
         public DateTime CompleteDate { get; set; }
         public int Priority { get; set; }
         public ProjectStatus Status { get; set; }
+        public List<Task> Tasks { get; set; }
     }
 }
