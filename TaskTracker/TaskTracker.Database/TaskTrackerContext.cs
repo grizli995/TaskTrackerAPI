@@ -8,7 +8,9 @@ namespace TaskTracker.Database
     {
         public DbSet<Task> Tasks { get; set; }
         public DbSet<Project> Projects { get; set; }
-
+        public TaskTrackerContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Server=DESKTOP-QC7UKQR;Database=TaskTrackerDb;Trusted_Connection=True;");
