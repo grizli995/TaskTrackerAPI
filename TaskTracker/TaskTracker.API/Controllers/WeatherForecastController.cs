@@ -31,7 +31,6 @@ namespace TaskTracker.API.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
-            var x = _projectService.GetProject(0);
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
