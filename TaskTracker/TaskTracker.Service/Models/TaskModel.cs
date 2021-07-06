@@ -1,15 +1,18 @@
-﻿using TaskTracker.Database.Enums;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using TaskTracker.Database.Entities;
+using TaskTracker.Database.Enums;
 
-namespace TaskTracker.Database.Entities
+namespace TaskTracker.Services.Models
 {
-    public class Task
+    public class TaskModel
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int Priority { get; set; }
         public TaskStatus Status { get; set; }
         public int ProjectId { get; set; }
-        public Project Project { get; set; }
     }
 }
