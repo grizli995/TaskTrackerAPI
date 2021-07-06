@@ -27,6 +27,7 @@ namespace TaskTracker.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<ITaskService, TaskService>();
 
             services.AddControllers();
             services.AddMvc(opt =>

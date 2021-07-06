@@ -44,7 +44,7 @@ namespace TaskTracker.Services
         /// <param name="filterEndDate">Filter End Date</param>
         /// <param name="sortBy">Sort By</param>
         /// <returns>Returns an array of projects.</returns>
-        public async System.Threading.Tasks.Task<List<Project>> GetProjectsAsync(string filterName, int? filterPriority, ProjectStatus? filterStatus, DateTime? filterStartDate, DateTime? filterEndDate, SortingOrder? sortBy)
+        public async System.Threading.Tasks.Task<List<Project>> GetProjectsAsync(string filterName, int? filterPriority, ProjectStatus? filterStatus, DateTime? filterStartDate, DateTime? filterEndDate, ProjectSortingOrder? sortBy)
         {
             var query = BuildQueryable(filterName, filterPriority, filterStatus, filterStartDate, filterEndDate);
 
@@ -180,32 +180,32 @@ namespace TaskTracker.Services
         /// <param name="query">Input query</param>
         /// <param name="sortBy">Sort By</param>
         /// <returns>IOrderedQueryable<Project> based on sortBy parameter.</returns>
-        private IOrderedQueryable<Project> AddSorting(IQueryable<Project> query, SortingOrder? sortBy)
+        private IOrderedQueryable<Project> AddSorting(IQueryable<Project> query, ProjectSortingOrder? sortBy)
         {
             if (!sortBy.HasValue)
                 return query.OrderBy(item => item.Id);
 
             switch (sortBy.Value)
             {
-                case (SortingOrder.NameAsc):
+                case (ProjectSortingOrder.NameAsc):
                     return query.OrderBy(item => item.Name);
-                case (SortingOrder.NameDesc):
+                case (ProjectSortingOrder.NameDesc):
                     return query.OrderByDescending(item => item.Name);
-                case (SortingOrder.StartDateAsc):
+                case (ProjectSortingOrder.StartDateAsc):
                     return query.OrderBy(item => item.StartDate);
-                case (SortingOrder.StartDateDesc):
+                case (ProjectSortingOrder.StartDateDesc):
                     return query.OrderByDescending(item => item.StartDate);
-                case (SortingOrder.CompleteDateAsc):
+                case (ProjectSortingOrder.CompleteDateAsc):
                     return query.OrderBy(item => item.CompleteDate);
-                case (SortingOrder.CompleteDateDesc):
+                case (ProjectSortingOrder.CompleteDateDesc):
                     return query.OrderByDescending(item => item.CompleteDate);
-                case (SortingOrder.PriorityAsc):
+                case (ProjectSortingOrder.PriorityAsc):
                     return query.OrderBy(item => item.Priority);
-                case (SortingOrder.PriorityDesc):
+                case (ProjectSortingOrder.PriorityDesc):
                     return query.OrderByDescending(item => item.Priority);
-                case (SortingOrder.StatusAsc):
+                case (ProjectSortingOrder.StatusAsc):
                     return query.OrderBy(item => item.Status);
-                case (SortingOrder.StatusDesc):
+                case (ProjectSortingOrder.StatusDesc):
                     return query.OrderByDescending(item => item.Status);
                 default:
                     return query.OrderBy(item => item.Id);

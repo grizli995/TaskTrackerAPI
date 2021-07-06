@@ -29,14 +29,14 @@ namespace TaskTracker.Test
 
         [Theory]
         [InlineData("Aliquam", null, null, null, null, null)]
-        [InlineData("elementum", null, null, null, null, SortingOrder.PriorityDesc)]
-        [InlineData("facilisis", null, ProjectStatus.ToDo, null, null, SortingOrder.PriorityDesc)]
+        [InlineData("elementum", null, null, null, null, ProjectSortingOrder.PriorityDesc)]
+        [InlineData("facilisis", null, ProjectStatus.NotStarted, null, null, ProjectSortingOrder.PriorityDesc)]
         [InlineData(null, 1, null, null, null, null)]
-        [InlineData(null, 1, null, null, null, SortingOrder.StatusAsc)]
-        [InlineData(null, null, ProjectStatus.InProgress, null, null, null)]
-        [InlineData(null, null, ProjectStatus.ToDo, null, null, SortingOrder.PriorityAsc)]
-        [InlineData("Suspendisse", 4, ProjectStatus.ToDo, null, null, null)]
-        public async System.Threading.Tasks.Task TestGetProjectsWithoutDates(string filterName, int? filterPriority, ProjectStatus? filterStatus, DateTime? filterStartDate, DateTime? filterEndDate, SortingOrder? sortBy)
+        [InlineData(null, 1, null, null, null, ProjectSortingOrder.StatusAsc)]
+        [InlineData(null, null, ProjectStatus.Active, null, null, null)]
+        [InlineData(null, null, ProjectStatus.NotStarted, null, null, ProjectSortingOrder.PriorityAsc)]
+        [InlineData("Suspendisse", 4, ProjectStatus.NotStarted, null, null, null)]
+        public async System.Threading.Tasks.Task TestGetProjectsWithoutDates(string filterName, int? filterPriority, ProjectStatus? filterStatus, DateTime? filterStartDate, DateTime? filterEndDate, ProjectSortingOrder? sortBy)
         {
             var projects = await _projectService.GetProjectsAsync(filterName, filterPriority, filterStatus, filterStartDate, filterEndDate, sortBy);
 
@@ -108,7 +108,9 @@ namespace TaskTracker.Test
         [InlineData(9342)]
         public async System.Threading.Tasks.Task TestGetProjectNonExistantId(int id)
         {
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _projectService.GetProjectAsync(id));
+            var result = await _projectService.GetProjectAsync(id);
+
+            Assert.Null(result);
         }
 
         #endregion
@@ -124,7 +126,7 @@ namespace TaskTracker.Test
                 StartDate = DateTime.UtcNow,
                 CompleteDate = DateTime.UtcNow.AddMonths(3),
                 Priority = 1,
-                Status = ProjectStatus.InProgress,
+                Status = ProjectStatus.Active,
                 Tasks = new List<Task>()
             };
 
@@ -152,7 +154,7 @@ namespace TaskTracker.Test
                 StartDate = DateTime.UtcNow,
                 CompleteDate = DateTime.UtcNow.AddMonths(3),
                 Priority = 1,
-                Status = ProjectStatus.InProgress,
+                Status = ProjectStatus.Active,
                 Tasks = new List<Task>()
             };
 
@@ -179,7 +181,7 @@ namespace TaskTracker.Test
                 StartDate = DateTime.UtcNow,
                 CompleteDate = DateTime.UtcNow.AddMonths(3),
                 Priority = 1,
-                Status = ProjectStatus.InProgress,
+                Status = ProjectStatus.Active,
                 Tasks = new List<Task>()
             };
 
@@ -197,7 +199,7 @@ namespace TaskTracker.Test
                 StartDate = DateTime.UtcNow,
                 CompleteDate = DateTime.UtcNow.AddMonths(3),
                 Priority = 1,
-                Status = ProjectStatus.InProgress,
+                Status = ProjectStatus.Active,
                 Tasks = new List<Task>()
             };
 
@@ -210,7 +212,7 @@ namespace TaskTracker.Test
 
         [Theory]
         [InlineData(1)]
-        public async System.Threading.Tasks.Task DeleteProject(int id)
+        public async System.Threading.Tasks.Task TestDeleteProject(int id)
         {
             await _projectService.DeleteProjectAsync(id);
         }
@@ -219,7 +221,7 @@ namespace TaskTracker.Test
         [InlineData(412)]
         [InlineData(983)]
         [InlineData(81224)]
-        public async System.Threading.Tasks.Task DeleteProjectInvalidId(int id)
+        public async System.Threading.Tasks.Task TestDeleteProjectInvalidId(int id)
         {
             await Assert.ThrowsAnyAsync<Exception>(() =>  _projectService.DeleteProjectAsync(id));
         }

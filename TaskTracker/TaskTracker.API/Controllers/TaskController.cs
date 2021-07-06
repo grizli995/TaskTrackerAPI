@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using TaskTracker.Database.Entities;
 using TaskTracker.Database.Enums;
@@ -13,21 +14,21 @@ namespace TaskTracker.API.Controllers
     [Route("[controller]")]
     [Produces("application/json")]
     [Consumes("application/json")]
-    public class ProjectController : ControllerBase
+    public class TaskController : ControllerBase
     {
         #region Fields
 
-        private readonly IProjectService _projectService;
-        private readonly ILogger<Project> _logger;
+        private readonly ITaskService _taskService;
+        private readonly ILogger<Task> _logger;
 
         #endregion
 
         #region Constructors
 
-        public ProjectController(ILogger<Project> logger, IProjectService projectService)
+        public TaskController(ILogger<Task> logger, ITaskService taskService)
         {
             _logger = logger;
-            _projectService = projectService;
+            _taskService = taskService;
         }
 
         #endregion
@@ -35,41 +36,39 @@ namespace TaskTracker.API.Controllers
         #region Methods
 
         /// <summary>
-        /// Returns list of project entities based on filter parameters.
+        /// Returns list of task entities based on filter parameters.
         /// </summary>
         /// <param name="filterName">Filter Name</param>
         /// <param name="filterPriority">Filter Priority</param>
         /// <param name="filterStatus">Filter Status</param>
-        /// <param name="filterStartDate">Filter Start Date</param>
-        /// <param name="filterEndDate">Filter End Date</param>
         /// <param name="sortBy">Sort By</param>
-        /// <returns>List of Project Entities</returns>
+        /// <returns>List of Task Entities</returns>
         [HttpGet]
-        [Route("/projects", Name = "QueryProjects")]
+        [Route("/tasks", Name = "QueryTasks")]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public async System.Threading.Tasks.Task<IActionResult> Get(string filterName, int? filterPriority, ProjectStatus? filterStatus, DateTime? filterStartDate, DateTime? filterEndDate, ProjectSortingOrder? sortBy)
+        public async System.Threading.Tasks.Task<IActionResult> Get(string filterName, int? filterPriority, TaskStatus? filterStatus, TaskSortingOrder? sortBy)
         {
             try
             {
-                var projects = await _projectService.GetProjectsAsync(filterName, filterPriority, filterStatus, filterStartDate, filterEndDate, sortBy);
-                var response = new JsonResult(projects);
+                var tasks = await _taskService.GetTasksAsync(filterName, filterPriority, filterStatus, sortBy);
+                var response = new JsonResult(tasks);
                 return response;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "GetProjects failed.");
+                _logger.LogError(e, "QueryTasks failed.");
                 return new JsonResult(StatusCode((int)HttpStatusCode.InternalServerError, e));
             }
         }
 
         /// <summary>
-        /// Get Project by key
+        /// Get Task by key
         /// </summary>
-        /// <param name="key">Project Identifier</param>
-        /// <returns>Project Entity</returns>
+        /// <param name="key">Task Identifier</param>
+        /// <returns>Task Entity</returns>
         [HttpGet]
-        [Route("/projects/{key}", Name = "GetProjectByKey")]
+        [Route("/tasks/{key}", Name = "GetTaskByKey")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -78,97 +77,97 @@ namespace TaskTracker.API.Controllers
         {
             try
             {
-                var project = await _projectService.GetProjectAsync(key);
-                if (project == null)
+                var task = await _taskService.GetTaskAsync(key);
+                if (task == null)
                     return new JsonResult(StatusCode((int)HttpStatusCode.NotFound, key));
 
-                var response = new JsonResult(project);
+                var response = new JsonResult(task);
                 return response;
             }
             catch (ArgumentException ae)
             {
-                _logger.LogError(ae, "GetProjectByKey failed.");
+                _logger.LogError(ae, "GetTaskByKey failed.");
                 return new JsonResult(StatusCode((int)HttpStatusCode.BadRequest, ae));
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "GetProjectByKey failed.");
+                _logger.LogError(e, "GetTaskByKey failed.");
                 return new JsonResult(StatusCode((int)HttpStatusCode.InternalServerError, e));
             }
         }
 
         /// <summary>
-        /// Add Project entity
+        /// Add Task entity
         /// </summary>
-        /// <param name="input">Input Project model</param>
+        /// <param name="input">Input Task model</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/projects", Name = "CreateProject")]
+        [Route("/tasks", Name = "CreateTask")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public async System.Threading.Tasks.Task<IActionResult> Post([FromBody] ProjectModel input)
+        public async System.Threading.Tasks.Task<IActionResult> Post([FromBody] TaskModel input)
         {
             try
             {
-                await _projectService.AddProjectAsync(input);
+                await _taskService.AddTaskAsync(input);
                 return new JsonResult(Ok());
             }
             catch (ArgumentNullException ae)
             {
-                _logger.LogError(ae, "CreateProject failed.");
+                _logger.LogError(ae, "CreateTask failed.");
                 return new JsonResult(StatusCode((int)HttpStatusCode.BadRequest, ae));
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "CreateProject failed.");
+                _logger.LogError(e, "CreateTask failed.");
                 return new JsonResult(StatusCode((int)HttpStatusCode.InternalServerError, e));
             }
         }
 
         /// <summary>
-        /// Update Project entity
+        /// Update Task entity
         /// </summary>
-        /// <param name="key">Project Identifier</param>
-        /// <param name="input">Input Project Model</param>
+        /// <param name="key">Task Identifier</param>
+        /// <param name="input">Input Task Model</param>
         /// <returns></returns>
         [HttpPut]
-        [Route("/projects/{key}", Name = "UpdateProject")]
+        [Route("/tasks/{key}", Name = "UpdateTask")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public async System.Threading.Tasks.Task<IActionResult> Put([FromRoute] int key, [FromBody] ProjectModel input)
+        public async System.Threading.Tasks.Task<IActionResult> Put([FromRoute] int key, [FromBody] TaskModel input)
         {
             try
             {
-                await _projectService.UpdateProjectAsync(key, input);
+                await _taskService.UpdateTaskAsync(key, input);
                 return new JsonResult(Ok());
             }
             catch (ArgumentException ae)
             {
-                _logger.LogError(ae, "UpdateProject failed.");
+                _logger.LogError(ae, "UpdateTask failed.");
                 return new JsonResult(StatusCode((int)HttpStatusCode.BadRequest, ae));
             }
             catch (InvalidOperationException ioe)
             {
-                _logger.LogError(ioe, "UpdateProject failed.");
+                _logger.LogError(ioe, "UpdateTask failed.");
                 return new JsonResult(StatusCode((int)HttpStatusCode.NotFound, ioe));
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "UpdateProject failed.");
+                _logger.LogError(e, "UpdateTask failed.");
                 return new JsonResult(StatusCode((int)HttpStatusCode.InternalServerError, e));
             }
         }
 
         /// <summary>
-        /// Delete Project entity by key
+        /// Delete Task entity by key
         /// </summary>
-        /// <param name="key">Project Identifier</param>
+        /// <param name="key">Task Identifier</param>
         /// <returns></returns>
         [HttpDelete]
-        [Route("/projects/{key}", Name = "DeleteProject")]
+        [Route("/tasks/{key}", Name = "DeleteTask")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -176,21 +175,58 @@ namespace TaskTracker.API.Controllers
         {
             try
             {
-                await _projectService.DeleteProjectAsync(key);
+                await _taskService.DeleteTaskAsync(key);
                 return new JsonResult(Ok());
             }
             catch (ArgumentException ae)
             {
-                _logger.LogError(ae, "DeleteProject failed.");
+                _logger.LogError(ae, "DeleteTask failed.");
                 return new JsonResult(StatusCode((int)HttpStatusCode.BadRequest, ae));
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "DeleteProject failed.");
+                _logger.LogError(e, "DeleteTask failed.");
                 return new JsonResult(StatusCode((int)HttpStatusCode.InternalServerError, e));
             }
         }
 
+
+
+        /// <summary>
+        /// Change project for Task entity by key
+        /// </summary>
+        /// <param name="taskKey">Task Identifier</param>
+        /// <param name="projectKey">Task Identifier</param>
+        /// <returns></returns>
+        [HttpPatch]
+        [Route("/tasks/{taskKey}", Name = "ChangeProject")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public async System.Threading.Tasks.Task<IActionResult> ChangeProjectId([FromRoute] int taskKey, [FromQuery] int projectKey)
+        {
+            try
+            {
+                await _taskService.ChangeProjectAsync(taskKey, projectKey);
+                return new JsonResult(Ok());
+            }
+            catch (ArgumentException ae)
+            {
+                _logger.LogError(ae, "ChangeProject failed.");
+                return new JsonResult(StatusCode((int)HttpStatusCode.BadRequest, ae));
+            }
+            catch (InvalidOperationException ae)
+            {
+                _logger.LogError(ae, "ChangeProject failed.");
+                return new JsonResult(StatusCode((int)HttpStatusCode.NotFound, ae));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "ChangeProject failed.");
+                return new JsonResult(StatusCode((int)HttpStatusCode.InternalServerError, e));
+            }
+        }
         #endregion
     }
 }

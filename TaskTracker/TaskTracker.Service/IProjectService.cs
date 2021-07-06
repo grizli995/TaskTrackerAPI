@@ -21,7 +21,7 @@ namespace TaskTracker.Services
         /// <param name="filterEndDate">Filter End Date</param>
         /// <param name="sortBy">Sort By</param>
         /// <returns>Returns an array of projects.</returns>
-        System.Threading.Tasks.Task<List<Project>> GetProjectsAsync(string filterName, int? filterPriority, ProjectStatus? filterStatus, DateTime? filterStartDate, DateTime? filterEndDate, SortingOrder? sortBy);
+        System.Threading.Tasks.Task<List<Project>> GetProjectsAsync(string filterName, int? filterPriority, ProjectStatus? filterStatus, DateTime? filterStartDate, DateTime? filterEndDate, ProjectSortingOrder? sortBy);
 
         /// <summary>
         /// Get project by identfier.

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TaskTracker.Database.Enums
+﻿namespace TaskTracker.Database.Enums
 {
-    public enum SortingOrder
+    public enum ProjectSortingOrder
     {
         NameAsc,
         NameDesc,

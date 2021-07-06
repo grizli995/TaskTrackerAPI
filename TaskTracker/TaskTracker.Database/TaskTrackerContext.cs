@@ -8,6 +8,9 @@ namespace TaskTracker.Database
     {
         public DbSet<Task> Tasks { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public TaskTrackerContext()
+        {
+        }
         public TaskTrackerContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
